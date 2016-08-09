@@ -284,7 +284,9 @@ server.get('/set', function(req, res) {
     }
     res.end("Data received !");
 })
-
+server.get('/angular', function (req, res) {
+  res.sendFile(__dirname + '/public/angular.html');
+});
 // handler for chat messages ...
 function processChatMessage(chatMessage) {
     if (chatMessage) {
