@@ -1,0 +1,6 @@
+echo 1 > /proc/sys/net/ipv4/ip_forward
+
+iptables -A FORWARD -o wlan1 -i wlan0 -m conntrack --ctstate NEW -j ACCEPT
+iptables -A FORWARD -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+iptables -t nat -F POSTROUTING
+iptables -t nat -A POSTROUTING -o wlan1 -j MASQUERADE

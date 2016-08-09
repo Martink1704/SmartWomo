@@ -1,0 +1,3 @@
+DHCPD_CONF=/etc/dhcp3/dhcpd.conf
+DHCPD_PID=/var/run/dhcpd.pid 
+INTERFACES="wlan0"

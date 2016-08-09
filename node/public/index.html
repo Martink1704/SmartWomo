@@ -1,0 +1,632 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <script type="text/javascript" src="jquery-1.11.0.min.js"></script>
+    <title>smartWoMo</title>
+    <style>
+        * {
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: black;
+            
+        }
+        
+        .tileGroup {}
+        
+        tile {
+            float: left;
+            width: 98%;
+            height: 200px;
+            background: #424242;
+            border-top: 1px solid lightgrey;
+            border-left: 1px solid lightgrey;
+            margin: 1%;
+            border-radius: 10px;
+        }
+        
+        smallTile {
+            float: left;
+            width: 98%;
+            height: 100px;
+            background: #424242;
+            border-top: 1px solid lightgrey;
+            border-left: 1px solid lightgrey;
+            margin: 1%;
+            border-radius: 10px;
+        }
+        
+        lampTile {
+            float: left;
+            width: 30px;
+            height: 30px;
+            background: #424242;
+            margin: 1%;
+            border-radius: 15px;
+        }
+        
+        skinButton {
+            float: left;
+            width: 80px;
+            height: 40px;
+            background: dodgerblue;
+            margin: 1%;
+            border-radius: 15px;
+            font-size: 24px;
+            
+        }
+        
+        flexTile {
+            float: left;
+            width: 98%;
+            background: #424242;
+            border-top: 1px solid lightgrey;
+            border-left: 1px solid lightgrey;
+            margin: 1%;
+            border-radius: 10px;
+        }
+        
+        .content {
+            margin: 10px auto;
+            align-content: center;
+        }
+        
+        @media screen and (min-width:650px) {
+            .content {}
+            tile {
+                width: 230px;
+            }
+            flexTile {
+                width: 230px;
+            }
+            smallTile {
+                width: 230px;
+            }
+        }
+        
+        @media screen and (min-width:960px) {
+            .content {}
+            tile {
+                width: 230px;
+            }
+            flexTile {
+                width: 230px;
+            }
+            smallTile {
+                width: 230px;
+            }
+        }
+        
+        @media screen and (min-width:1200px) {
+            .content {
+                max-width: 1460px;
+            }
+            tile {
+                width: 230px;
+            }
+            flexTile {
+                width: 230px;
+            }
+            smallTile {
+                width: 230px;
+            }
+        }
+        
+        .day {
+            color: white;
+        }
+        
+        .night {
+            color: rgb(255,120,28);
+        }
+        
+        .triangleUp {
+            width: 0;
+            height: 0;
+            border-left: 40px solid transparent;
+            border-right: 40px solid transparent;
+            border-bottom: 40px solid dodgerblue;
+        }
+        
+        .triangleDown {
+            width: 0;
+            height: 0;
+            border-left: 40px solid transparent;
+            border-right: 40px solid transparent;
+            border-top: 40px solid dodgerblue;
+        }
+        
+        .TileHeadline {
+            text-align: center;
+            font-size: 2.0em;
+            padding-top: 5px;
+        }
+        
+        .bigNumber {
+            font-size: 5.0em
+        }
+        
+        .middleNumber {
+            font-size: 3.0em
+        }
+        
+        .number {
+            font-size: 1.5em
+        }
+        
+        .text {
+            font-size: 1.5em;
+            min-width: 100px;
+        }
+        
+        .lightcyan {
+            background-color: lightcyan
+        }
+        
+        .lightyellow {
+            background: lightyellow
+        }
+        
+        .infoBackground {
+            background: lightgray
+        }
+        
+        .controlLight {
+            height: 5px;
+            width: 100px;
+            display: table;
+            margin: 0 auto;
+            border-radius: 50px;
+        }
+        
+        .fixedWidth {
+            width: 250px;
+        }
+        
+        .alignCenter {
+            align-content: center
+        }
+        
+        .swButton {
+            margin: 3%;
+            border-bottom-width: 1px;
+            border-bottom-style: solid;
+            border-bottom-color: lightgrey;
+            padding-top: 5px;
+            padding-left: 10px;
+            height: 50px;
+            font-size: 24px;
+        }
+        
+        .itemSelector {
+            height: 12px;
+            width: 12px;
+            display: table;
+            border-radius: 6px;
+            background-color: #424242;
+            float: right;
+            position: relative;
+            top: 8px;
+            margin-right: 3%;
+        }
+        
+        .itemSelectedDay {
+            background-color: dodgerblue;
+        }
+        
+        .itemSelectedNight {
+            background-color: rgb(255,120,28);
+        }
+        
+        .hidden {
+            visibility: hidden;
+        }
+    </style>
+
+    <script type='text/javascript'>
+        showHeatingControls = false;
+			currentTemperature = -999;
+			desiredTemperature = 21;
+			currentHumidity = -999;
+			heatingIsOn = false;
+            batteryLevel = 0;
+            batteryVoltage = 0;
+            musicPlayLists = [];
+            musicTracks = [];
+            radioStreams = [];
+            currentPlaylist = 99999;
+            currentTrack = 0;
+            musicPlays = false;
+            var audioControl;
+            radioPlays = false;
+            currentRadioStream = 99999;
+            skin = "day";
+            ajaxError = false;
+			
+			$(document).ready( function() {
+                audioControl = document.getElementById('track');
+				// alert("###################### Hello World");
+				$.ajaxSetup({
+					error: AjaxError
+				});
+				// read initial values ...
+				readValuesFromServer();
+				setInterval(function(){readValuesFromServer()}, 2000);
+			});
+			
+			function AjaxError(x, e) {
+				// alert("An AJAX error occured: \nError: " + e + "\nError detail: " + x.responseText); 
+                if (x.responseText.indexOf("TypeError") == -1) {
+                    ajaxError = true;
+				    $('lampTile').css('background-color', '#424242');
+                }
+			}
+						
+			function readValuesFromServer()
+			{
+                // set the time ...
+                currDate = new Date();
+                minutes = (currDate.getMinutes().length == 1) ? '0' + currDate.getMinutes() : currDate.getMinutes();
+                $('#currentTime').text(currDate.getHours() + ':' + minutes);
+                // retrieve values from backend ...
+				$.get("/get?" + (new Date()).getTime(), function( data ) {
+					// alert("get: " + data);
+                    ajaxError = false;
+					var smartWoMoValues = jQuery.parseJSON(data);
+					desiredTemperature = parseInt(smartWoMoValues.targetTemperature);
+					$('#desiredTemperature').text(smartWoMoValues.targetTemperature + '°');
+					currentTemperature = parseInt(smartWoMoValues.temperature);
+                    // batteryLevel = parseInt(smartWoMoValues.batteryLevel);
+                    batteryLevel = smartWoMoValues.batteryLevel;
+                    batteryVoltage = smartWoMoValues.batteryVoltage;
+                    musicPlayList = smartWoMoValues.musicPlayList;
+                    heatingIsOn = smartWoMoValues.heatingIsOn;
+                    // alert(musicPlayList.Filmmusik);
+					if (currentTemperature > -999) {
+						$('#currentTemperature').text(smartWoMoValues.temperature + '°');
+					} else {
+						$('#currentTemperature').text('?');
+					}
+					currentHumidity = parseInt(smartWoMoValues.humidity);
+					if (currentHumidity > -999) {
+						$('#currentHumidity').text(smartWoMoValues.humidity + '%');
+					} else {
+						$('#currentHumidity').text('?');
+					}
+                    if (heatingIsOn) {
+                        $('lampTile').css('background-color', 'lightgreen');
+                    } else {
+                       if (skin == "day") {
+					        $('lampTile').css('background-color', 'dodgerblue');
+                       } else {
+                            $('lampTile').css('background-color', 'rgb(255,120,28)');
+                       }
+                    }
+                    // batteryLevel = 150;
+                    if (batteryLevel > 100) {
+                        $('#batteryLevelText').width('100%');
+                        if (skin == "day") {
+                            $('#batteryLevelText').css('background-color', 'dodgerblue');
+                            $('#batteryLevelText').css('color', 'white');
+                        } else {
+                            $('#batteryLevelText').css('background-color', 'rgb(255,120,28)');
+                            $('#batteryLevelText').css('color', '#424242');
+                        }
+                        $('#batteryLevelText').text('wird geladen ...');
+                    } else {
+                        if (batteryLevel < 0) {
+                            $('#batteryLevelText').css('background-color', '#424242');
+                            if (skin == "day") {
+                                $('#batteryLevelText').css('color', 'white');
+                            } else {
+                                $('#batteryLevelText').css('color', 'rgb(255,120,28)');
+                            }
+                            $('#batteryLevelText').width('100%');
+                            $('#batteryLevelText').text('ist leer !');
+                        } else {
+                            if (skin == "day") {                        
+                                $('#batteryLevelText').css('background-color', 'dodgerblue');
+                                $('#batteryLevelText').css('color', 'white');
+                            } else {
+                                $('#batteryLevelText').css('background-color', 'rgb(255,120,28)');
+                                $('#batteryLevelText').css('color', '#424242');
+                            }
+                            $('#batteryLevelText').width(batteryLevel.toString() + '%');
+                            $('#batteryLevelText').text('');
+                        }
+                    }
+                    if (musicPlayLists.length == 0) {
+                        // music play lists are only parsed once ...
+                        musicPlayLists = smartWoMoValues.musicPlayLists;
+                        if (musicPlayLists instanceof Array) {
+                            // alert("Array length: " + musicPlayLists.length.toString());
+                            if (musicPlayLists.length > 0) {
+                                $('#musicPlayLists').removeClass('hidden');
+                            } 
+                            for (var i=0; i < musicPlayLists.length; ++i) {
+                                // alert(musicPlayLists[i]);
+                                var playList = '"' + musicPlayLists[i].name + '"';
+                                var plHtml = "<div class='swButton' onClick='playMusic(" 
+                                                // + playList 
+                                                + i.toString()
+                                                + ")'><div style='display: inline-block; max-height: 30px; max-width: 85%; overflow: hidden; text-overflow: ellipsis;'>" 
+                                                + musicPlayLists[i].name 
+                                                + "</div><div id='" 
+                                                + "selectId" + i.toString()
+                                                + "' class='itemSelector'></div></div>";
+                                $( "#musicPlayLists" ).append( plHtml );
+                            }
+                        } 
+                    }
+                    if (radioStreams.length == 0) {
+                        radioStreams = smartWoMoValues.radioStreams;
+                        // alert("Radio Streams: " + radioStreams.toString());
+                        if (radioStreams instanceof Array) {
+                            if (radioStreams.length > 0) {
+                                $('#radioStreams').removeClass('hidden');
+                                for (var i=0; i < radioStreams.length; ++i) {
+                                    if (radioStreams[i].url != "") {
+                                        var rlHtml = "<div class='swButton' onClick='playRadioStream(" 
+                                                        + i
+                                                        + ")'><div style='display: inline-block; max-height: 30px; max-width: 85%; overflow: hidden; text-overflow: ellipsis;'>" 
+                                                        + radioStreams[i].label 
+                                                        + "</div><div id='" 
+                                                        + "radioStreamId" + i.toString()
+                                                        + "' class='itemSelector'></div></div>";  
+                                        $( "#radioStreams" ).append( rlHtml );   
+                                   }                               
+                                }
+                            }
+                        }
+                    }
+                    // $('#batteryText').text('Batterie (' + batteryVoltage + ' V)');
+				});				
+			}
+            function playMusic(playListIndex) {   
+                if (radioPlays) {
+                    radioPlays = false;
+                    $('#radioStreamId' + currentRadioStream).removeClass('itemSelectedDay');
+                    $('#radioStreamId' + currentRadioStream).removeClass('itemSelectedNight');
+                    radioPlays = false;
+                }           
+                if (currentPlaylist == playListIndex) {
+                    if (musicPlays) {
+                        audioControl.pause();
+                        musicPlays = false;
+                        $('#selectId' + playListIndex).removeClass('itemSelectedDay');
+                        $('#selectId' + playListIndex).removeClass('itemSelectedNight');
+                    } else {
+                        audioControl.play();
+                        musicPlays = true;    
+                        if (skin == "day") {
+                            $('#selectId' + playListIndex).addClass('itemSelectedDay');
+                        } else {
+                            $('#selectId' + playListIndex).addClass('itemSelectedNight');     
+                        }           
+                    }
+                } 
+                else {
+                    if (currentPlaylist != 99999) {
+                        $('#selectId' + currentPlaylist).removeClass('itemSelectedDay');
+                        $('#selectId' + currentPlaylist).removeClass('itemSelectedNight');
+                    }
+                    currentPlaylist = playListIndex;
+                    if (skin == "day") {
+                        $('#selectId' + playListIndex).addClass('itemSelectedDay');
+                    } else {
+                        $('#selectId' + playListIndex).addClass('itemSelectedNight');
+                    }
+                    // start playlist at a random track ...
+                    currentTrack = Math.round(Math.random() * (musicPlayLists[playListIndex].track.length - 1));
+                    if (currentTrack >= musicPlayLists[playListIndex].track.length) {
+                       currentTrack = 0;
+                    }
+                    $("#track").attr("src", "music/" + musicPlayLists[playListIndex].name + "/" + musicPlayLists[playListIndex].track[currentTrack]);
+                    audioControl.play();
+                    musicPlays = true;
+                    audioControl.onended = function() {
+                       currentTrack += 1;
+                       if (currentTrack >= (musicPlayLists[playListIndex].track.length)) {
+                            currentTrack = 0;
+                       }
+                       $("#track").attr("src", "music/" + musicPlayLists[playListIndex].name + "/" + musicPlayLists[playListIndex].track[currentTrack]);
+                       audioControl.play();
+                    } 
+                } 
+            } 
+            function playRadioStream(radioStreamIndex) { 
+                if (musicPlays) {
+                    musicPlays = false;
+                    $('#selectId' + currentPlaylist).removeClass('itemSelectedDay');
+                    $('#selectId' + currentPlaylist).removeClass('itemSelectedNight');
+                    musicPlays = false;
+                } 
+                if (currentRadioStream == radioStreamIndex) {
+                    if (radioPlays) {
+                        audioControl.pause();
+                        radioPlays = false;
+                        $('#radioStreamId' + radioStreamIndex).removeClass('itemSelectedDay');
+                        $('#radioStreamId' + radioStreamIndex).removeClass('itemSelectedNight');
+                    } else {
+                        audioControl.play();
+                        radioPlays = true;
+                        if (skin == "day") {    
+                            $('#radioStreamId' + radioStreamIndex).addClass('itemSelectedDay');  
+                        } else {
+                            $('#radioStreamId' + radioStreamIndex).addClass('itemSelectedNight');
+                        }           
+                    }                
+                } else {
+                    if (currentRadioStream != 99999) {
+                        $('#radioStreamId' + currentRadioStream).removeClass('itemSelectedDay');
+                        $('#radioStreamId' + currentRadioStream).removeClass('itemSelectedNight');
+                    }
+                    currentRadioStream = radioStreamIndex;
+                    if (skin == "day") {
+                        $('#radioStreamId' + radioStreamIndex).addClass('itemSelectedDay');
+                    } else {
+                        $('#radioStreamId' + radioStreamIndex).addClass('itemSelectedNight');
+                    }
+                    // alert("Stream: " + radioStreams[radioStreamIndex].url);
+                    $("#track").attr("src", radioStreams[radioStreamIndex].url);
+                    audioControl.play();
+                    radioPlays = true;
+                }
+            }
+			function setOnServer(variable, value) {
+				$.get("/set?" + variable + "=" + value.toString(), function( data ) {});
+			}
+			function increaseDesiredTemperature() {
+				desiredTemperature += 1;
+				$('#desiredTemperature').text(desiredTemperature.toString() + '°');
+				setOnServer('targetTemperature', desiredTemperature);
+			}
+			function decreaseDesiredTemperature() {
+				desiredTemperature -= 1;
+				$('#desiredTemperature').text(desiredTemperature.toString() + '°');
+				setOnServer('targetTemperature', desiredTemperature);
+			}
+            function toggleSkin() {
+                if (skin == "day") {
+                    $('.day').addClass('night').removeClass('day');
+                    $('.swButton').css('border-bottom-color', 'rgb(255,120,28)');
+                    $('tile').css('border-top-color', '#424242');
+                    $('tile').css('border-left-color', '#424242');
+                    $('smallTile').css('border-top-color', '#424242');
+                    $('smallTile').css('border-left-color', '#424242');
+                    $('flexTile').css('border-top-color', '#424242');
+                    $('flexTile').css('border-left-color', '#424242');
+                    $('.itemSelectedDay').addClass('itemSelectedNight').removeClass('itemSelectedDay');
+                    $('.triangleUp').css('border-bottom-color', 'rgb(255,120,28)');
+                    $('.triangleDown').css('border-top-color', 'rgb(255,120,28)');
+                    if (batteryLevel > 0) {
+                        $('#batteryLevelText').css('background-color', 'rgb(255,120,28)');
+                        $('#batteryLevelText').css('color', '#424242');
+                    } else {
+                        $('#batteryLevelText').css('background-color', '#424242');
+                        $('#batteryLevelText').css('color', 'rgb(255,120,28)');
+                    }
+                    if (ajaxError == false) {
+                        $('lampTile').css('background-color', 'rgb(255,120,28)');
+                    }
+                    $('#skinText').text('Tag');
+                    skin = "night";
+                } else {
+                    $('.night').addClass('day').removeClass('night');
+                    $('.swButton').css('border-bottom-color', 'lightgrey');
+                    $('tile').css('border-top-color', 'lightgrey');
+                    $('tile').css('border-left-color', 'lightgrey');
+                    $('smallTile').css('border-top-color', 'lightgrey');
+                    $('smallTile').css('border-left-color', 'lightgrey');
+                    $('flexTile').css('border-top-color', 'lightgrey');
+                    $('flexTile').css('border-left-color', 'lightgrey');
+                    $('.itemSelectedNight').addClass('itemSelectedDay').removeClass('itemSelectedNight');
+                    $('.triangleUp').css('border-bottom-color', 'dodgerblue');
+                    $('.triangleDown').css('border-top-color', 'dodgerblue');
+                    if (batteryLevel > 0) {
+                        $('#batteryLevelText').css('background-color', 'dodgerblue');
+                        $('#batteryLevelText').css('color', 'white');
+                    } else {
+                        $('#batteryLevelText').css('background-color', '#424242');
+                        $('#batteryLevelText').css('color', 'white');
+                    }
+                    if (ajaxError == false) {
+                        $('lampTile').css('background-color', 'dodgerblue');
+                    }    
+                    $('#skinText').text('Nacht');               
+                    skin = "day";
+                }
+            }
+    </script>
+
+</head>
+
+<body class="day">
+
+    <div class='content'>
+        <!--  
+ -->
+        <smallTile style='padding-top: 25px;' onClick="toggleSkin()">
+            <lampTile id='lampTile' class='post' style='margin-top: 7px; line-height: 10px; margin-left: 3%; padding-left: 10px'>
+                <div align='center'>
+                    <div id='connectionStatus'></div>
+                </div>
+                <br>
+            </lampTile>
+            <div align='center'>
+                <div id='skinText' style='font-size: 24px; line-height: 45px;'>Nacht</div>
+            </div>
+            <br>
+            <!--  
+            <skinButton id='skinButton' class='post' style='line-height: 40px; margin-right: 3%; '>
+                <div align='center'>
+                    <div id='skinText' style='text-align: center;'>Nacht</div>
+                </div>
+                <br>
+            </skinButton>
+             -->
+        </smallTile>
+
+
+        <smallTile id='batteryTile' class='post'>
+            <div id='batteryText' class='TileHeadline'>Batterie</div>
+            <div style='padding: 10px'>
+                <div id='batteryLevelText' style='height: 35px; line-height: 35px; text-align: center; font-size: 1.5em'></div>
+            </div>
+            <br>
+        </smallTile>
+
+        <smallTile id='currentHumidityTile' class='post' style='line-height: 100px;' onclick="document.getElementById('track').play()">
+            <div align='center'>
+                <div id='currentHumidity' class='bigNumber'>?</div>
+            </div>
+            <br>
+        </smallTile>
+        
+        <smallTile id='clockTile' class='post' style='line-height: 100px;'>
+            <div align='center'>
+                <div id='currentTime' class='bigNumber'></div>
+            </div>
+            <br>
+        </smallTile>
+
+        <smallTile id='currentTemperatureTile' class='post' style='line-height: 100px;'>
+            <div align='center'>
+                <div id='currentTemperature' class='bigNumber'>?</div>
+            </div>
+            <br>
+        </smallTile>
+
+        <tile id='temperatureTile' class='post'>
+            <div id='heatingLayout'>
+                <div align='center'>
+                    <div style='height: 13px;'></div>
+                    <div id='heatingPlusButton' class='triangleUp' height='50' width='50' onClick='increaseDesiredTemperature()'>
+                    </div>
+                    <div id='desiredTemperature' class='bigNumber'>21°</div>
+                    <div id='heatingMinusButton' class='triangleDown' height='50' width='50' onClick='decreaseDesiredTemperature()'>
+                    </div>
+                </div>
+                <br>
+            </div>
+        </tile>
+
+        <flexTile id="musicPlayLists" class="hidden">
+        </flexTile>
+        
+        <flexTile id="radioStreams" class="hidden">
+        </flexTile>        
+        
+        <audio id='track' src=""></audio>
+
+    </div>
+
+</body>
+
+</html>

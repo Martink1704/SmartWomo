@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>smartWoMo - Einstellungen</title>
+    <link rel="stylesheet" href="jquery.mobile-1.4.5/jquery.mobile-1.4.5.min.css">
+    <link rel="stylesheet" href="jquery.mobile-1.4.5/jqm-demos.css">
+    <link rel="shortcut icon" href="jquery.mobile-1.4.5/favicon.ico">
+    <script src="jquery.mobile-1.4.5/jquery-1.11.0.min.js"></script>
+    <script src="jquery.mobile-1.4.5/jquery.mobile-1.4.5.min.js"></script>
+    <script type='text/javascript'>
+        var configuration = new Object();
+                    
+        $(document).on("pagecreate", "#menuList", function(event){
+
+        
+            $.get("/getConfiguration?" + (new Date()).getTime(), function( data ) {
+                // alert(data);
+                configuration = jQuery.parseJSON(data);
+                if (configuration.useChat == "true") {
+                    $('#chatSwitch').attr("checked", true);
+                } else {
+                    $('#chatSwitch').attr("checked", false);
+                }
+                if (configuration.jabberService == "") {
+                    $('#jabberService').attr("placeholder", "Beispiel: jabber.de");
+                } else {
+                    $('#jabberService').val(configuration.jabberService);
+                }
+                if (configuration.jabberUser == "") {
+                    $('#jabberUser').attr("placeholder", "Beispiel: wohnmobil@jabber.de");
+                } else {
+                    $('#jabberUser').val(configuration.jabberUser);
+                }
+                if (configuration.jabberPassword == "") {
+                    $('#jabberPassword').attr("placeholder", "Kennwort von wohnmobil@jabber.de");
+                } else {
+                    $('#jabberPassword').val(configuration.jabberPassword);
+                }
+                if (configuration.myJabberUser == "") {
+                    $('#myJabberUser').attr("placeholder", "Beispiel: ich@jabber.de");
+                } else {
+                    $('#myJabberUser').val(configuration.myJabberUser);
+                }
+                if (configuration.wifiPassword == "") {
+                    $('#wifiPassword').attr("placeholder", "Kennwort des WLAN Netzwerks");
+                } else {
+                    $('#wifiPassword').val(configuration.wifiPassword);
+                }
+                if (configuration.wifiName == "") {
+                    $('#wifiName').attr("placeholder", "ABCD1234");
+                } else {
+                    $('#wifiName').val(configuration.wifiName);
+                }
+                // alert(configuration);
+                
+            });
+            // alert("pagecreate event fired!");
+        });
+        
+        function saveChatData() {
+            purl = "/setConfiguration?useChat=";
+            purl += $("#chatSwitch").is(":checked") ? "true" : "false";
+            purl += "&jabberService=";
+            purl += $('#jabberService').val();
+            purl += "&jabberUser=";
+            purl += $('#jabberUser').val();
+            purl += "&jabberPassword=";
+            purl += $('#jabberPassword').val();
+            purl += "&myJabberUser=";
+            purl += $('#myJabberUser').val();
+            // alert(purl);
+            $.get(purl, function( data ) {
+            });
+        }
+        
+        function changePassword() {
+            // alert("changePassword");
+            purl = "/setConfiguration?password=";
+            purl += $('#password').val();
+            $.get(purl, function( data ) {
+            });
+        }
+        
+        function changeSambaPassword() {
+            // alert("changePassword");
+            purl = "/setConfiguration?sambaPassword=";
+            purl += $('#sambaPassword').val();
+            $.get(purl, function( data ) {
+            });
+        }
+        
+        function changeWIFISettings() {
+            // alert("changePassword");
+            purl = "/setConfiguration?wifiPassword=";
+            purl += $('#wifiPassword').val();
+            purl += "&wifiName=";
+            purl += $('#wifiName').val();
+            $.get(purl, function( data ) {
+            });
+        }
+        
+        function shutdown(command) {
+            purl = "/setConfiguration?shutdown=";
+            purl += command;
+            $.get(purl, function( data ) {
+            });
+        }
+        
+        function toggleRoutingParams() {
+            // alert('clicked !!!');
+            $('#routingParams').show();
+        }
+        
+    </script>
+
+</head>
+
+<body>
+
+    <!-- Start of page: #menuList -->
+    <div data-role="page" id="menuList">
+
+        <div data-role="header">
+            <h1><b>smartWomo</b> Einstellungen</h1>
+        </div>
+        <!-- /header -->
+
+        <div class="ui-grid-a ui-responsive">
+            <div class="ui-block-a"><a href="#passwordSettings" class="ui-shadow ui-btn ui-corner-all ui-btn-icon-left ui-icon-lock">Anmelde Kennwort</a></div>
+            <div class="ui-block-b"><a href="#sambaPasswordSettings" class="ui-shadow ui-btn ui-corner-all ui-btn-icon-left ui-icon-lock">Samba Kennwort</a></div>
+            <div class="ui-block-a"><a href="#WIFISettings" class="ui-shadow ui-btn ui-corner-all ui-btn-icon-left ui-icon-gear">WLAN Einstellungen</a></div>
+            <div class="ui-block-b"><a href="#chatSettings" class="ui-shadow ui-btn ui-corner-all ui-btn-icon-left ui-icon-comment">Chat Einstellungen</a></div>
+            <div class="ui-block-a"><a href="#shutdown" class="ui-shadow ui-btn ui-corner-all ui-btn-icon-left ui-icon-power">Ausschalten</a></div>
+        </div>
+        <!-- /content -->
+
+    </div>
+    <!-- /page menuList -->
+
+    <div data-role="page" id="passwordSettings">
+
+        <div data-role="header" class="jqm-header">
+            <a href="#menuList" class="ui-btn ui-icon-home ui-btn-icon-left">Menü</a>
+            <h1 style="align: center">Anmelde Kennwort</h1>
+        </div>
+        <!-- /header -->
+
+        <div role="main" class="ui-content">
+
+            <div>Du kannst hier das Kennwort ändern, mit dem du dich an <b>smartWomo</b> anmeldest.</div>
+            <br>
+            <form>
+                <label for="password">Neues Kennwort:</label>
+                <input type="text" name="password" id="password" value="" autocomplete="off">
+            </form>
+            <button class="ui-btn ui-corner-all ui-shadow" onclick="changePassword();">Kennwort sichern</button>
+
+        </div>
+        <!-- /content -->
+
+        <div data-role="footer" data-position="fixed" data-tap-toggle="false" class="jqm-footer">
+        </div>
+        <!-- /footer -->
+
+    </div>
+    <!-- /page -->
+    
+    <div data-role="page" id="sambaPasswordSettings">
+
+        <div data-role="header" class="jqm-header">
+            <a href="#menuList" class="ui-btn ui-icon-home ui-btn-icon-left">Menü</a>
+            <h1 style="align: center">Samba Kennwort</h1>
+        </div>
+        <!-- /header -->
+
+        <div role="main" class="ui-content">
+
+            <div>Du kannst hier das Kennwort ändern, mit du das Dateisystem von <b>smartWomo</b> von einem anderen Computer aus erreichen kannst.</div>
+            <br>
+            <form>
+                <label for="sambaPassword">Neues Kennwort:</label>
+                <input type="text" name="sambaPassword" id="sambaPassword" value="" autocomplete="off">
+            </form>
+            <button class="ui-btn ui-corner-all ui-shadow" onclick="changeSambaPassword();">Kennwort sichern</button>
+
+        </div>
+        <!-- /content -->
+
+        <div data-role="footer" data-position="fixed" data-tap-toggle="false" class="jqm-footer">
+        </div>
+        <!-- /footer -->
+
+    </div>
+    <!-- /page -->
+    
+    <div data-role="page" id="WIFISettings">
+
+        <div data-role="header" class="jqm-header">
+            <a href="#menuList" class="ui-btn ui-icon-home ui-btn-icon-left">Menü</a>
+            <h1 style="align: center">WLAN</h1>
+        </div>
+        <!-- /header -->
+
+        <div role="main" class="ui-content">
+
+            <div>Du kannst hier die Einstellungen für das drahtlose Netzwerk festlegen, das von <b>smartWomo</b> aufgebaut wird.</div>
+            <br>
+            <div>
+                <label for="wifiName">Name des WLAN Netzwerks:</label>
+                <input type="text" name="wifiName" id="wifiName" value="" autocomplete="off">
+            </div>
+            <br>
+            <div>
+                <label for="wifiPassword">WLAN Kennwort (mindestens 8 Zeichen):</label>
+                <input type="text" name="wifiPassword" id="wifiPassword" value="" autocomplete="off">
+            </div>
+            <br>
+            <div>
+                <div>
+                    Wenn sich ein anderes Gerät (beispielsweise dein Smartphone) mit diesem WLAN Netzwerk verbindet, kann es erst mal nur mit <b>smartWomo</b>
+                    selbst kommunizieren, aber nicht mit dem Internet. Damit wird verhindert, dass das Smartphone, mit dem du <b>smartWomo</b> steuerst, 
+                    unnötigen Datenverkehr auf Kosten deiner Internet-Verbindung erzeugt. 
+                </div>
+                <br>
+                <div>
+                    Du kannst dem Smartphone aber auch ermöglichen, die Internet-Verbindung von <b>smartWomo</b> mit zu benutzen.
+                </div>
+                <br>
+                <label for="routingAllowed">Darf ein verbundenes Gerät die Internet-Verbindung von <b>smartWomo</b> mitbenutzen ?</label>
+                <input type="checkbox" data-role="flipswitch" name="routingAllowed" id="routingAllowed" onchange="toggleRoutingParams();" data-on-text="Ja" data-off-text="Nein" data-wrapper-class="custom-size-flipswitch">
+            </div>
+            <br>
+            <div id="routingParams" style="display: none">
+                <div data-role="fieldcontain">
+                    <fieldset data-role="controlgroup">
+         	                <input type="radio" name="radio-choice-1" id="radio-choice-1" value="choice-1" checked="checked" />
+         	                <label for="radio-choice-1">Mobilfunk</label>
+         	                <input type="radio" name="radio-choice-1" id="radio-choice-2" value="choice-2"  />
+         	                <label for="radio-choice-2">Zweites WLAN Netzwerk</label>
+                    </fieldset>
+                </div>
+            </div>
+            <button class="ui-btn ui-corner-all ui-shadow" onclick="changeWIFISettings();">Sichern</button>
+
+        </div>
+        <!-- /content -->
+
+        <div data-role="footer" data-position="fixed" data-tap-toggle="false" class="jqm-footer">
+        </div>
+        <!-- /footer -->
+
+    </div>
+    <!-- /page -->
+
+    <div data-role="page" id="chatSettings">
+
+        <div data-role="header" class="jqm-header">
+            <a href="#menuList" class="ui-btn ui-icon-home ui-btn-icon-left">Menü</a>
+            <h1 style="align: center">Chat Einstellungen</h1>
+        </div>
+        <!-- /header -->
+
+        <div role="main" class="ui-content">
+
+            <form>
+                <div>
+                    <label for="chatSwitch">Möchtest du per Chat mit <b>smartWomo</b> kommunizieren ?</label>
+                    <input type="checkbox" data-role="flipswitch" name="chatSwitch" id="chatSwitch" data-on-text="Ja" data-off-text="Nein" data-wrapper-class="custom-size-flipswitch">
+                </div>
+                <div>
+                    <br>
+                    <label for="jabberService">Jabber/XMPP Dienst, bei dem das Wohnmobil registriert ist:</label>
+                    <input type="text" name="jabberService" id="jabberService" value="" placeholder="" autocomplete="off">
+                </div>
+                <div>
+                    <label for="jabberUser">Jabber/XMPP Benutzer des Wohnmobils:</label>
+                    <input type="text" name="jabberUser" id="jabberUser" value="" placeholder="" autocomplete="off">
+                </div>
+                <div>
+                    <label for="jabberPassword">Kennwort des Jabber/XMPP Wohnmobil Benutzers:</label>
+                    <input type="text" name="jabberPassword" id="jabberPassword" value="" placeholder="" autocomplete="off">
+                </div>
+                <div>
+                    <br>
+                    <label for="myJabberUser">Mein Jabber/XMPP Benutzer:</label>
+                    <input type="text" name="myJabberUser" id="myJabberUser" value="" placeholder="ich@jabber.de" autocomplete="off">
+                </div>
+                <br>
+                <button class="ui-btn ui-corner-all ui-shadow" onclick="saveChatData();">Chat Einstellungen sichern</button>
+            </form>
+
+        </div>
+        <!-- /content -->
+
+        <div data-role="footer" data-position="fixed" data-tap-toggle="false" class="jqm-footer">
+        </div>
+        <!-- /footer -->
+
+    </div>
+    <!-- /page -->
+
+    <div data-role="page" id="shutdown">
+
+        <div data-role="header" class="jqm-header">
+            <a href="#menuList" class="ui-btn ui-icon-home ui-btn-icon-left">Menü</a>
+            <h1 style="align: center">Ausschalten</h1>
+        </div>
+        <!-- /header -->
+
+        <div role="main" class="ui-content">
+
+            <form>
+
+                <div>
+                    Du solltest dem Raspberry nicht einfach den Strom abschalten, sondern das System wie einen gewöhnlichen Computer herunterfahren.
+                    Damit stellst du sicher, dass keine Daten verloren gehen.
+                </div>
+                <br>
+                <button class="ui-btn ui-corner-all ui-shadow" onclick="shutdown('shutdown');">Raspberry herunter fahren</button>
+                <button class="ui-btn ui-corner-all ui-shadow" onclick="shutdown('reboot');">Raspberry neu starten</button>
+
+                <br>
+                <div>
+                    Du kannst auch einfach nur die <b>smartWoMo</b> Software neu starten, ohne den Raspberry herunter zu
+                    fahren.
+                </div>
+                <br>
+                <button class="ui-btn ui-corner-all ui-shadow" onclick="shutdown('restartSmartWoMo');"><b>smartWomo</b> neu starten</button>
+
+            </form>
+
+        </div>
+        <!-- /content -->
+
+        <div data-role="footer" data-position="fixed" data-tap-toggle="false" class="jqm-footer">
+        </div>
+        <!-- /footer -->
+
+    </div>
+    <!-- /page -->
+
+</body>
+
+</html>

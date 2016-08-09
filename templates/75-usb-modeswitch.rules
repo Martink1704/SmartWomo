@@ -1,0 +1,2 @@
+#huawei e303
+ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="12d1", ATTRS{idProduct}=="1f01", RUN+="/usr/sbin/usb_modeswitch -v 0x12d1 -p 0x1f01 -M '55534243123456780000000000000a11062000000000000100000000000000’”
